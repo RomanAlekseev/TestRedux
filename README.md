@@ -1,2 +1,0 @@
-# TestRedux
-Created with CodeSandbox
