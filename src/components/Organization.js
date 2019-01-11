@@ -2,25 +2,55 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { addOrganization } from "../actions/actions";
 import { deleteOrganization } from "../actions/actions";
+import ModalConfirm from "../components/ModalConfirm";
+import ModalInputOrg from "../components/ModalInputOrg";
 
 class Organization extends React.Component {
   constructor() {
     super();
+    // modal
+    this.state = {
+      modalСonfirmIsOpen: false,
+      ModalInputOrgIsOpen: false,
+      deleteNumber: 0
+    };
+    this.closeInputModal = this.closeInputModal.bind(this);
+    this.openInputModal = this.openInputModal.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.handleAddOrg = this.handleAddOrg.bind(this);
+    this.handleDeleteOrg = this.handleDeleteOrg.bind(this);
+  }
+  closeInputModal() {
+    this.setState({ ModalInputOrgIsOpen: false });
+  }
+  openInputModal() {
+    this.setState({ ModalInputOrgIsOpen: true });
+  }
+  openModal(e) {
+    const targetOrg = e.target.id;
+    this.setState({ modalСonfirmIsOpen: true, deleteNumber: targetOrg });
+  }
+  closeModal() {
+    this.setState({ modalСonfirmIsOpen: false });
   }
   handleAddOrg(e) {
     e.preventDefault();
     const newOrganization = {
       id: 2,
-      title: "Zodiac",
+      title: "Ультра",
       address: "ул.Московская 2а",
       inn: "1111-2222-3333"
     };
     this.props.addOrg(newOrganization);
   }
+  handleDeleteOrg(e) {
+    this.closeModal();
+    this.props.delOrg(this.state.deleteNumber);
+    this.setState({ deleteNumber: 0 });
+  }
 
   render() {
-    console.log(this.props.organization[0].title);
     var self: any = this;
     return (
       <>
@@ -56,7 +86,7 @@ class Organization extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.organization.map(function(item: any) {
+                {this.props.organization.map(function(item, index) {
                   return (
                     <tr key={item.id}>
                       <th scope="row">{item.id}</th>
@@ -67,13 +97,15 @@ class Organization extends React.Component {
                         <button
                           type="button"
                           className="btn btn-outline-primary"
+                          onClick={self.openInputModal}
                         >
                           Change
                         </button>
                         <button
+                          id={index}
                           type="button"
                           className="btn btn-outline-danger mx-2"
-                          onClick={self.props.delOrg(item.id)}
+                          onClick={self.openModal}
                         >
                           Delete
                         </button>
@@ -87,12 +119,35 @@ class Organization extends React.Component {
               type="button"
               className="btn btn-success mt-3 float-right"
               style={{ marginRight: "17%" }}
-              onClick={this.handleAddOrg}
+              // onClick={this.handleAddOrg}
+              onClick={this.openInputModal}
             >
               Add Organization
             </button>
           </div>
         </main>
+        <ModalConfirm
+          modalIsOpen={this.state.modalСonfirmIsOpen}
+          closeModal={this.closeModal}
+          handleDeleteOrg={this.handleDeleteOrg}
+          deleteNumber={this.state.deleteNumber}
+          title={
+            this.props.organization.length > 0
+              ? this.props.organization[this.state.deleteNumber].title
+              : "Org"
+          }
+        />
+        <ModalInputOrg
+          ModalInputOrgIsOpen={this.state.ModalInputOrgIsOpen}
+          closeModal={this.closeInputModal}
+          handleAddOrg={this.handleAddOrg}
+          deleteNumber={this.state.deleteNumber}
+          title={
+            this.props.organization.length > 0
+              ? this.props.organization[this.state.deleteNumber].title
+              : "Org"
+          }
+        />
       </>
     );
   }

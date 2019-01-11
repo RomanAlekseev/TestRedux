@@ -18,13 +18,21 @@ export default function orgReducer(state = initialState, action) {
   //     return [...state, action.payload];
   // }
   if (action.type === ADD_ORGANIZATION) {
-    return Object.assign({}, state, {
-      organization: state.organization.concat(action.payload)
-    });
+    return { ...state, organization: [...state.organization, action.payload] };
+    // return Object.assign({}, state, {
+    //   organization: state.organization.concat(action.payload)
+    // });
   } else if (action.type === DELETE_ORGANIZATION) {
-    return Object.assign({}, state, {
-      organization: state.organization.splice(action.payload, 1)
-    });
+    return {
+      ...initialState,
+      organization: [
+        ...state.organization.slice(0, action.payload),
+        ...state.organization.slice(action.payload + 1)
+      ]
+    };
+    // return Object.assign({}, state, {
+    //   organization: state.organization.splice(action.payload, 1)
+    // });
   }
   return state;
 }
