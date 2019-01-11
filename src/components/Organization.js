@@ -1,8 +1,26 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { addOrganization } from "../actions/actions";
+import { deleteOrganization } from "../actions/actions";
 
 class Organization extends React.Component {
+  constructor() {
+    super();
+    this.handleAddOrg = this.handleAddOrg.bind(this);
+  }
+  handleAddOrg(e) {
+    e.preventDefault();
+    const newOrganization = {
+      id: 2,
+      title: "Zodiac",
+      address: "ул.Московская 2а",
+      inn: "1111-2222-3333"
+    };
+    this.props.addOrg(newOrganization);
+  }
+
   render() {
+    console.log(this.props.organization[0].title);
     var self: any = this;
     return (
       <>
@@ -55,7 +73,7 @@ class Organization extends React.Component {
                         <button
                           type="button"
                           className="btn btn-outline-danger mx-2"
-                          onClick={self.deleteOrg}
+                          onClick={self.props.delOrg(item.id)}
                         >
                           Delete
                         </button>
@@ -69,6 +87,7 @@ class Organization extends React.Component {
               type="button"
               className="btn btn-success mt-3 float-right"
               style={{ marginRight: "17%" }}
+              onClick={this.handleAddOrg}
             >
               Add Organization
             </button>
@@ -80,8 +99,18 @@ class Organization extends React.Component {
 }
 
 const mapStateToProps = state => {
-  return { organization: state };
+  return { organization: state.organization };
 };
 
-const Org = connect(mapStateToProps)(Organization);
+function mapDispatchToProps(dispatch) {
+  return {
+    addOrg: article => dispatch(addOrganization(article)),
+    delOrg: identifer => dispatch(deleteOrganization(identifer))
+  };
+}
+
+const Org = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Organization);
 export default Org;
