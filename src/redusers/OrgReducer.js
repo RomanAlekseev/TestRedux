@@ -1,5 +1,6 @@
 import { ADD_ORGANIZATION } from "../constants/action-types";
 import { DELETE_ORGANIZATION } from "../constants/action-types";
+import { CHANGE_ORGANIZATION } from "../constants/action-types";
 
 const initialState = {
   organization: [
@@ -33,6 +34,15 @@ export default function orgReducer(state = initialState, action) {
     // return Object.assign({}, state, {
     //   organization: state.organization.splice(action.payload, 1)
     // });
+  } else if (action.type === CHANGE_ORGANIZATION) {
+    return {
+      ...initialState,
+      organization: [
+        ...state.organization.slice(0, action.payload.number),
+        action.payload.dataOrg,
+        ...state.organization.slice(action.payload.number + 1)
+      ]
+    };
   }
   return state;
 }

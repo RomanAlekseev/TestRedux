@@ -19,19 +19,35 @@ Modal.setAppElement("#root");
 export default class ModalInputOrg extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      id: "",
-      title: "",
-      adress: "",
-      inn: ""
-    };
+    this.state = this.props.orgData;
 
     this.handleChange = this.handleChange.bind(this);
+    this.addInfo = this.addInfo.bind(this);
+    this.handleChangeOrg = this.handleChangeOrg.bind(this);
   }
   handleChange(e) {
     const { name, value } = e.target;
     this.setState({ [name]: value });
   }
+  addInfo(e) {
+    e.preventDefault();
+    const data = this.state;
+    this.props.handleAddOrg(data);
+    this.props.closeModal();
+  }
+  handleChangeOrg(e) {
+    e.preventDefault();
+    const dataOrganization = this.state;
+    const numberOrg = this.props.deleteNumber;
+    const data = {
+      dataOrg: dataOrganization,
+      number: numberOrg
+    };
+    this.props.changeOrg(data);
+    this.props.closeModal();
+    this.props.changed();
+  }
+
   render() {
     return (
       <div>
@@ -45,27 +61,56 @@ export default class ModalInputOrg extends React.Component {
             <label className="">
               ID
               <br />
-              <input type="text" name="id" onChange={this.handleChange} />
+              <input
+                defaultValue={this.state.id}
+                type="text"
+                name="id"
+                onChange={this.handleChange}
+              />
             </label>
             <label className="">
               Title
               <br />
-              <input type="text" name="title" onChange={this.handleChange} />
+              <input
+                defaultValue={this.state.title}
+                type="text"
+                name="title"
+                onChange={this.handleChange}
+              />
             </label>
             <label className="">
               Adress
               <br />
-              <input type="text" name="adress" onChange={this.handleChange} />
+              <input
+                defaultValue={this.state.address}
+                type="text"
+                name="address"
+                onChange={this.handleChange}
+              />
             </label>
             <label className="">
               INN
               <br />
-              <input type="text" name="inn" onChange={this.handleChange} />
+              <input
+                defaultValue={this.state.inn}
+                type="text"
+                name="inn"
+                onChange={this.handleChange}
+              />
             </label>
             <input
               type="submit"
               value="Submit"
-              onClick={this.props.handleAddOrg}
+              style={this.props.onChanged ? { display: "none" } : null}
+              // onClick={this.props.handleAddOrg}
+              onClick={this.addInfo}
+            />
+            <input
+              type="submit"
+              value="Change"
+              style={!this.props.onChanged ? { display: "none" } : null}
+              // onClick={this.props.handleAddOrg}
+              onClick={this.handleChangeOrg}
             />
           </form>
         </Modal>

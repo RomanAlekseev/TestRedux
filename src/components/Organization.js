@@ -2,6 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { addOrganization } from "../actions/actions";
 import { deleteOrganization } from "../actions/actions";
+import { changeOrganization } from "../actions/actions";
 import ModalConfirm from "../components/ModalConfirm";
 import ModalInputOrg from "../components/ModalInputOrg";
 
@@ -12,7 +13,8 @@ class Organization extends React.Component {
     this.state = {
       modalСonfirmIsOpen: false,
       ModalInputOrgIsOpen: false,
-      deleteNumber: 0
+      deleteNumber: 0,
+      onChanged: false
     };
     this.closeInputModal = this.closeInputModal.bind(this);
     this.openInputModal = this.openInputModal.bind(this);
@@ -20,6 +22,20 @@ class Organization extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.handleAddOrg = this.handleAddOrg.bind(this);
     this.handleDeleteOrg = this.handleDeleteOrg.bind(this);
+    this.changeStart = this.changeStart.bind(this);
+    this.change = this.change.bind(this);
+  }
+  change() {
+    this.setState(previousState => {
+      return { onChanged: !previousState.onChanged };
+    });
+  }
+  changeStart(e) {
+    const number = e.target.getAttribute("number");
+    this.setState({ deleteNumber: number });
+    console.log(number);
+    this.setState({ onChanged: true });
+    this.openInputModal();
   }
   closeInputModal() {
     this.setState({ ModalInputOrgIsOpen: false });
@@ -34,7 +50,7 @@ class Organization extends React.Component {
   closeModal() {
     this.setState({ modalСonfirmIsOpen: false });
   }
-  handleAddOrg(e) {
+  handleAddOrg(e, data) {
     e.preventDefault();
     const newOrganization = {
       id: 2,
@@ -42,7 +58,7 @@ class Organization extends React.Component {
       address: "ул.Московская 2а",
       inn: "1111-2222-3333"
     };
-    this.props.addOrg(newOrganization);
+    this.props.addOrg(data);
   }
   handleDeleteOrg(e) {
     this.closeModal();
@@ -97,7 +113,8 @@ class Organization extends React.Component {
                         <button
                           type="button"
                           className="btn btn-outline-primary"
-                          onClick={self.openInputModal}
+                          onClick={self.changeStart}
+                          number={index}
                         >
                           Change
                         </button>
@@ -140,13 +157,17 @@ class Organization extends React.Component {
         <ModalInputOrg
           ModalInputOrgIsOpen={this.state.ModalInputOrgIsOpen}
           closeModal={this.closeInputModal}
-          handleAddOrg={this.handleAddOrg}
+          handleAddOrg={this.props.addOrg}
           deleteNumber={this.state.deleteNumber}
           title={
             this.props.organization.length > 0
               ? this.props.organization[this.state.deleteNumber].title
               : "Org"
           }
+          orgData={this.props.organization[this.state.deleteNumber]}
+          changeOrg={this.props.changeOrg}
+          changed={this.change}
+          onChanged={this.state.onChanged}
         />
       </>
     );
@@ -159,8 +180,9 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
   return {
-    addOrg: article => dispatch(addOrganization(article)),
-    delOrg: identifer => dispatch(deleteOrganization(identifer))
+    addOrg: data => dispatch(addOrganization(data)),
+    delOrg: data => dispatch(deleteOrganization(data)),
+    changeOrg: data => dispatch(changeOrganization(data))
   };
 }
 
